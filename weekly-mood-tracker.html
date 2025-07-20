@@ -21,6 +21,7 @@
       --gradient-bg: linear-gradient(150deg, #fef9fb 0%, #e3f5e5 40%, #fceff4 100%);
     }
     body {
+      min-height: 100vh;
       font-family: 'Manrope', 'IBM Plex Sans', Arial, sans-serif;
       padding: 10px;
       display: flex;
@@ -86,7 +87,7 @@
       color: transparent;
       animation: rainbow-move 5s ease-in-out infinite alternate;
       margin-bottom: 12px;
-      display: inline-block;
+      display: flex;
     }
     @keyframes rainbow-move {
       0% { background-position: 0% 50%;}
