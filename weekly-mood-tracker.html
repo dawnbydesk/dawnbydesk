@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>weekly mood tracker</title>
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=IBM+Plex+Sans:wght@400;700&family=VT323&family=DM+Serif+Display&family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -22,8 +23,7 @@
     body {
       min-height: 100vh;
       font-family: 'Manrope', 'IBM Plex Sans', Arial, sans-serif;
-      padding: 5px;
-      display: flex;
+      padding: 10px;
     }
     /* WINDOW */
     .window {
@@ -33,7 +33,6 @@
       border-radius: 9px;
       background: var(--pane-bg);
       box-shadow: 7px 11px 0 #bcc9c5, 0 0 0 6px #e3f5e5;
-      display: flex;
       overflow: hidden;
     }
     .titlebar {
@@ -87,7 +86,7 @@
       color: transparent;
       animation: rainbow-move 5s ease-in-out infinite alternate;
       margin-bottom: 12px;
-      display: flex;
+      display: inline-block;
     }
     @keyframes rainbow-move {
       0% { background-position: 0% 50%;}
