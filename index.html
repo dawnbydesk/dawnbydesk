@@ -2,158 +2,348 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>retro matcha clock</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>weekly mood tracker</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=IBM+Plex+Sans:wght@400;700&family=VT323&family=DM+Serif+Display&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --matcha: #b4e6c1;
+      --matcha-dark: #90b77d;
       --border: #bcbcbc;
+      --text: #59475e;
+      --window-bg: #f8faff;
       --pane-bg: #ffffff;
       --titlebar: #b1dab8;
+      --gradient-bg: linear-gradient(150deg, #fef9fb 0%, #e3f5e5 40%, #fceff4 100%);
     }
-    body { 
-      background: transparent; 
-      font-family: 'Manrope', sans-serif; 
-      padding: 10px; }
+    body {
+      min-height: 100vh;
+      font-family: 'Manrope', 'IBM Plex Sans', Arial, sans-serif;
+      padding: 10px;
+    }
+    /* WINDOW */
     .window {
-      position: absolute;
-      width: 300px;
+      position: relative;
+      width: 460px;
       border: 2.5px solid var(--border);
-      border-radius: 15px;
+      border-radius: 9px;
       background: var(--pane-bg);
       box-shadow: 7px 11px 0 #bcc9c5, 0 0 0 6px #e3f5e5;
       overflow: hidden;
     }
     .titlebar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 14px; height: 32px;
       background: var(--titlebar);
       color: #3b4530;
-      font-family: 'VT323', monospace;
-      font-size: 20px;
-      border-bottom: 2px solid var(--border);
-      border-radius: 13px 13px 0 0;
-      user-select: none;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px #e1f7ed;
-    }
-    .buttons { display: flex; gap: 5px; }
-    .button { width: 13px; height: 13px; border-radius: 4px; background: #ffe5ee; border: 1.3px solid #bcbcbc; box-shadow: 1px 1px 0 #c2c2c2; }
-    .button:nth-child(1) { background: #ffb5b5; }
-    .button:nth-child(2) { background: #ffe9a8; }
-    .button:nth-child(3) { background: #b5ffd9; }
-    .toggle-container {
-      position: absolute;
-      top: 40px;
-      right: 14px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: #3b4530;
-    }
-    .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 18px;
-    }
-    .slider:before {
-      position: absolute; content: "";
-      height: 14px; width: 14px;
-      left: 2px; bottom: 2px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--titlebar); }
-    input:checked + .slider:before { transform: translateX(14px); }
-    .clock-container {
-      display: flex; flex-direction: column; align-items: center;
-      background: linear-gradient(120deg, #f8faff 65%, #e3f5e5 100%);
-      padding: 22px 0 16px;
-      min-height: 112px;
-    }
-    .clock-time {
+      justify-content: space-between;
+      padding: 0 10px;
+      height: 32px;
       font-family: 'VT323', monospace;
-      font-size: 66px;
-      font-weight: 700;
-      background: linear-gradient(90deg, #ff4686 0%, #fa8700 20%, #ffe53b 40%, #5eff6c 60%, #2acfff 80%, #737bff 90%, #c22cff 100%);
-      background-size: 220% 220%;
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow-move 5s ease-in-out infinite alternate;
-      letter-spacing: 3px;
-      text-shadow: 2px 2px 14px #b8b7e3;
-      margin: 0 0 12px;
-      line-height: 1.03;
-      min-width: 225px;
+      font-size: 19px;
+      border-bottom: 2px solid var(--border);
+      letter-spacing: 0.5px;
+      user-select: none;
+      box-shadow: 0 1.5px #fff4;
+    }
+    .titlebar .buttons {
+      display: flex;
+      gap: 4px;
+    }
+    .titlebar .button {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      background: #ffe5ee;
+      border: 1.5px solid #bcbcbc;
+      box-shadow: 1px 1px 0 #c2c2c2;
+      display: inline-block;
+      margin-right: 2px;
+      cursor: pointer;
+    }
+    .titlebar .button:nth-child(1) { background: #ffb5b5; }
+    .titlebar .button:nth-child(2) { background: #ffe9a8; }
+    .titlebar .button:nth-child(3) { background: #b5ffd9; margin-right:0;}
+    .content {
+      background: var(--gradient-bg);
+      padding: 26px 18px 22px 18px;
       text-align: center;
     }
-    @keyframes rainbow-move {
-      0% { background-position: 0% 60%; }
-      100% { background-position: 100% 60%; }
-    }
-    .clock-date {
-      font-family: 'Manrope', sans-serif;
-      font-size: 16px;
+    /* HEADER */
+    .main-title {
+      font-family: 'VT323', 'Press Start 2P', monospace;
+      font-size: 36px;
       font-weight: 700;
-      color: #a97ab7;
-      letter-spacing: 1px;
-      margin-top: 2px;
-      text-shadow: 0 1px 7px #baa5e5;
-      background: #fff4fa;
-      padding: 3px 15px 2px;
-      border-radius: 16px;
-      border: 1.2px solid #ebd6ec;
-      box-shadow: 0 2px 12px #fbe3fd50;
-      opacity: 0.97;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #d8baff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow-move 5s ease-in-out infinite alternate;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+    @keyframes rainbow-move {
+      0% { background-position: 0% 50%;}
+      100% { background-position: 100% 50%;}
+    }
+    .callout {
+      font-family: 'Quicksand', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: #EEA0E1;
+      background: linear-gradient(to bottom right,#fff5f9,#eafcf0);
+      border: 2px dashed #d8baff;
+      border-radius: 12px;
+      padding: 10px 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px #d8baff25;
+      display: inline-block;
+      text-shadow: 0 1px 7px #ffe0f4;
+    }
+    .callout::before {
+      content:"* click to log your vibe *";
+      font-family: 'Manrope', sans-serif;
+      font-size:11px;
+      color:#aa7d91;
+      position:absolute;
+      left:50%;
+      bottom:-16px;
+      transform:translateX(-50%);
+      font-style:normal;
+    }
+    .emoji-container{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-bottom:28px; }
+    .emoji{ font-size:38px; padding:12px 16px; border-radius:10px; background:radial-gradient(circle at top left,#ffffff,#f4fbf3); border:2px solid #bcbcbc; cursor:pointer; transition:transform .22s,box-shadow .22s,border-color .2s; position:relative; }
+    .emoji:hover{ transform:scale(1.15) rotate(-3deg); box-shadow:0 8px 24px #c5d8c5; background:linear-gradient(to top right,#fef6f9,#e6f8ec); border-color:#a2b5a0; z-index:10; }
+    .emoji.selected{ background:linear-gradient(to bottom right,#fdf3f8,#ecf9ef); box-shadow:inset 0 0 0 3px #bac9d6; border-color:#a6aec4; }
+    .tooltip{ visibility:hidden; opacity:0; position:absolute; bottom:-38px; left:50%; transform:translateX(-50%); background:#b25577; color:#fff; padding:6px 10px; border-radius:9px; font-size:12px; white-space:nowrap; transition:opacity .25s; pointer-events:none; box-shadow:0 2px 10px #b2557780; }
+    .emoji:hover .tooltip{ visibility:visible; opacity:1; }
+    .buttons-row{ text-align:center; margin-bottom:30px; }
+    button{ background:transparent; border:1.5px solid #bcbcbc; padding:10px 26px; border-radius:6px; font-family:'Manrope', 'IBM Plex Sans', sans-serif; font-size:14px; color:#7a6589; cursor:pointer; margin:0 8px; font-weight:600; transition:background .18s,color .18s; box-shadow:0 1px 5px #b9bbc4;}
+    button:hover{ background:#e0e3f7; color:#5b496d; }
+    .heatmap-container{ max-width:380px; margin:0 auto; text-align:center; }
+    .heatmap-title{ color:#977ebd; font-style: bold; font-size:15px; margin-bottom:8px; font-family:'IBM Plex Sans', serif;}
+    .heatmap-days-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+    .weekday-label {
+      font-weight: 700;
+      font-size: 14px;
+      color: #7765c4;
+      font-family: 'Manrope', 'VT323', monospace;
+      width: 36px;
+      text-align: center;
+      opacity: 0.90;
+      margin-bottom: 2px;
+      letter-spacing: 0.3px;
+    }
+    .heatmap{ display:flex; justify-content:center; gap:12px; }
+    .day-block{ width:36px; height:36px; border-radius:9px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:22px; color:#8b4a64; background:linear-gradient(to bottom,#fef9fb,#ecf9ef); border:1.5px solid #bcbcbc; transition:transform .18s,box-shadow .18s; }
+    .day-block:hover{ transform:scale(1.13); box-shadow:0 5px 16px #b6aac7aa; }
+    .mood-happy{background-color:#fbe8ec;} .mood-tired{background-color:#f6ecf0;} .mood-stressed{background-color:#fde9ee;} .mood-meh{background-color:#f9f5f6;} .mood-lovey{background-color:#fce9f2;} .mood-melting{background-color:#fff5ec;} .mood-existing{background-color:#ece4e7;} .mood-none{background-color:#fff7fa;}
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(210,200,245,0.17);
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+    .modal {
+      background: #fafcff;
+      padding: 20px 16px;
+      border: 2px solid #bcbcbc;
+      box-shadow: 4px 4px 0 #b6aac7,0 0 0 2px #e8dff2;
+      text-align: center;
+      width: 250px;
+      border-radius: 11px;
+      margin: 0 auto;
+      font-family: 'Manrope', 'IBM Plex Sans', sans-serif;
+      position: relative;
+      z-index: 100;
+      animation: pop-in .22s cubic-bezier(.43,1.55,.55,.95);
+    }
+    .modal h2{
+      font-family: 'VT323', monospace;
+      font-size: 22px;
+      margin-bottom: 16px;
+      color: #977ebd;
+      letter-spacing: 1.2px;
+      text-shadow: 0 2px 8px #e0dcfa;
+    }
+    .modal-buttons{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+    }
+    .modal button{
+      padding:6px 15px;
+      border:2px solid #bcbcbc;
+      background:#f6f6fe;
+      border-radius:8px;
+      font-family:'Manrope', 'IBM Plex Sans', sans-serif;
+      font-size:14px;
+      color:#6a5887;
+      box-shadow:0 1px 6px #e7e6ff;
+      font-weight:600;
+      margin-top:7px;
+      transition: background .2s, color .2s;
+    }
+    .modal button:hover{
+      background:#d6e5fc;
+      color:#735ca1;
+    }
+    @keyframes pop-in {
+      from { transform: scale(.93) translateY(24px); opacity: 0.3;}
+      to   { transform: scale(1) translateY(0); opacity: 1;}
     }
   </style>
 </head>
 <body>
   <div class="window">
     <div class="titlebar">
-      <span>matcha o' clock! 💚</span>
+      <span>weekly mood tracker 💗</span>
       <div class="buttons">
         <div class="button"></div>
         <div class="button"></div>
         <div class="button"></div>
       </div>
     </div>
-    <div class="toggle-container">
-      <span>12h</span>
-      <label class="switch">
-        <input type="checkbox" id="toggle-format">
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div class="clock-container">
-      <div class="clock-time" id="clock"></div>
-      <div class="clock-date" id="clock-date"></div>
+    <div class="content">
+      <div class="main-title">✦ weekly mood tracker ✦</div>
+      <div class="callout"> hello gorgeous! ♥
+        <br>
+        what is flowing through you? </div>
+      <div class="emoji-container" role="list">
+        <div class="emoji" data-mood="happy" role="listitem" tabindex="0" aria-label="feelin’ good">😊<div class="tooltip">feelin’ good</div></div>
+        <div class="emoji" data-mood="tired">😴<div class="tooltip">exhausted af</div></div>
+        <div class="emoji" data-mood="stressed">😤<div class="tooltip">stressed girly</div></div>
+        <div class="emoji" data-mood="meh">🥲<div class="tooltip">meh vibes</div></div>
+        <div class="emoji" data-mood="lovey">💗<div class="tooltip">soft & in love</div></div>
+        <div class="emoji" data-mood="melting">🫠<div class="tooltip">melting inside</div></div>
+        <div class="emoji" data-mood="existing">🧍‍♀️<div class="tooltip">just existing</div></div>
+      </div>
+      <div class="buttons-row">
+        <button id="clearTodayBtn">clear just today</button>
+        <button id="clearAllBtn">clear all</button>
+      </div>
+      <div class="heatmap-container" aria-live="polite" aria-atomic="true">
+        <div class="heatmap-title">how did you feel this week?</div>
+        <div class="heatmap-days-row"></div>
+        <div class="heatmap" role="list"></div>
+      </div>
+      <!-- modal overlay is now *inside* .window and centered over .window only -->
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+          <h2>clear all mood data?</h2>
+          <div class="modal-buttons">
+            <button id="confirmClear">yeah!</button>
+            <button id="cancelClear">nah.</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
-    const toggle = document.getElementById('toggle-format');
-    function pad(n) { return n < 10 ? '0' + n : n; }
-    function updateClock() {
-      const now = new Date();
-      const hours = now.getHours();
-      if (toggle.checked) {
-        const h12 = hours % 12 || 12;
-        document.getElementById('clock').textContent = pad(h12) + ':' + pad(now.getMinutes()) + (hours >= 12 ? ' pm' : ' am');
-      } else {
-        document.getElementById('clock').textContent = pad(hours) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    document.addEventListener('DOMContentLoaded',()=>{
+      const STORAGE_HISTORY_KEY='moodHistory';
+      const STORAGE_KEY='selectedMood';
+      const STORAGE_DATE_KEY='selectedMoodDate';
+      const emojis=document.querySelectorAll('.emoji');
+      function getLocalDateString(date=new Date()) {
+        date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return date.toISOString().slice(0,10);
       }
-      document.getElementById('clock-date').textContent = now.toLocaleDateString(undefined, { weekday:'short', year:'numeric', month:'short', day:'numeric' });
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-    toggle.addEventListener('change', updateClock);
+      function getStartOfWeek(date=new Date()) {
+        let d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        d.setDate(d.getDate() - d.getDay());
+        return d;
+      }
+      function getThisWeekDates() {
+        const start = getStartOfWeek();
+        return Array.from({length:7}, (_,i)=>{
+          let d = new Date(start);
+          d.setDate(d.getDate() + i);
+          return getLocalDateString(d);
+        });
+      }
+      const todayStr = getLocalDateString();
+      let history=JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY))||{};
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate()-14);
+      Object.keys(history).forEach(d=>new Date(d)<cutoff&&delete history[d]);
+      localStorage.setItem(STORAGE_HISTORY_KEY,JSON.stringify(history));
+      if(localStorage.getItem(STORAGE_DATE_KEY)===todayStr){
+        const m=localStorage.getItem(STORAGE_KEY);
+        document.querySelector(`.emoji[data-mood="${m}"]`)?.classList.add('selected');
+      }
+      emojis.forEach(e=>e.addEventListener('click',()=>{
+        confetti({particleCount:60,spread:70,origin:{y:0.6},scalar:0.75});
+        emojis.forEach(x=>x.classList.remove('selected'));
+        e.classList.add('selected');
+        localStorage.setItem(STORAGE_KEY,e.dataset.mood);
+        localStorage.setItem(STORAGE_DATE_KEY,todayStr);
+        history[todayStr]=e.dataset.mood;
+        localStorage.setItem(STORAGE_HISTORY_KEY,JSON.stringify(history));
+        render();
+      }));
+      document.getElementById('clearTodayBtn').onclick=()=>{
+        if(localStorage.getItem(STORAGE_DATE_KEY)===todayStr){
+          delete history[todayStr];
+          localStorage.setItem(STORAGE_HISTORY_KEY,JSON.stringify(history));
+          emojis.forEach(x=>x.classList.remove('selected'));
+          render();
+        }
+      };
+      document.getElementById('clearAllBtn').onclick=()=>{
+        document.getElementById('modalOverlay').style.display='flex';
+      };
+      document.getElementById('confirmClear').onclick=()=>{
+        localStorage.clear();history={};
+        emojis.forEach(x=>x.classList.remove('selected'));
+        render();
+        document.getElementById('modalOverlay').style.display='none';
+      };
+      document.getElementById('cancelClear').onclick=()=>{
+        document.getElementById('modalOverlay').style.display='none';
+      };
+      const moodClassMap={happy:'mood-happy',tired:'mood-tired',stressed:'mood-stressed',meh:'mood-meh',lovey:'mood-lovey',melting:'mood-melting',existing:'mood-existing',none:'mood-none'};
+      const moodEmoji={happy:'😊',tired:'😴',stressed:'😤',meh:'🥲',lovey:'💗',melting:'🫠',existing:'🧍‍♀️',none:'–'};
+      function render(){
+        const weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const weekDates = getThisWeekDates();
+        const drow = document.querySelector('.heatmap-days-row');
+        drow.innerHTML = '';
+        weekDays.forEach(d => {
+          const label = document.createElement('div');
+          label.className = 'weekday-label';
+          label.innerText = d;
+          drow.appendChild(label);
+        });
+        const c=document.querySelector('.heatmap');
+        c.innerHTML='';
+        weekDates.forEach((dateStr,i)=>{
+          const m=history[dateStr]||'none';
+          const b=document.createElement('div');
+          b.className=`day-block ${moodClassMap[m]}`;
+          b.innerHTML=`<div>${moodEmoji[m]}</div>`;
+          c.appendChild(b);
+        });
+      }
+      render();
+    });
   </script>
 </body>
 </html>
