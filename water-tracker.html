@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>matcha water tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Manrope:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --matcha: #b4e6c1;
+      --matcha-dark: #90b77d;
+      --border: #bcbcbc;
+      --pane-bg: #ffffff;
+      --titlebar: #ffc5d3;
+      --accent: #bae1ff;
+      --drop: #baffc9;
+    }
+    body { background: #ffffff; font-family: 'Manrope', Arial, sans-serif; padding: 10px; }
+    .water-window { width: 360px; border: 2.5px solid var(--border); border-radius: 17px 20px 16px 16px; background: var(--pane-bg); box-shadow: 8px 13px 0 #d9f6ec, 0 0 0 6px #ffe5ee; overflow: hidden; position: absolute; }
+    .water-titlebar { background: var(--titlebar); color: #3b4530; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 33px; font-family: 'VT323', monospace; font-size: 20px; border-bottom: 2.5px solid var(--border); user-select: none; letter-spacing: 1px; border-radius: 16px 18px 0 0; box-shadow: 0 2px #ffeff7; text-shadow: 1.5px 1.5px 0 #ffc1e6a0; }
+    .window-icons { display: flex; gap: 4px; }
+    .icon { width: 12px; height: 12px; border-radius: 3.5px; background: #ffb5b5; border: 1px solid #e7b6d8; box-shadow: 1px 1px 0 #ffd5f5; }
+    .icon:nth-child(2) { background: #ffecb7; }
+    .icon:nth-child(3) { background: #baffc9; }
+    .water-body { padding: 19px 16px 22px; background: linear-gradient(120deg, #fff7fa 60%, #e3f5e5 100%); display: flex; flex-direction: column; align-items: center; position: relative; }
+    .water-widget-title { font-family: 'VT323', monospace; font-weight: bold; font-size: 29px; letter-spacing: 0.01px; background: linear-gradient(90deg, #baffc9, #ffb3ba, #bae1ff, #ffecb7); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rainbow-move 4s ease-in-out infinite alternate; margin-bottom: 9px; }
+    @keyframes rainbow-move { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    .drops-row { display: flex; gap: 10px; margin: 3px 0 12px; }
+    .drop { width: 30px; height: 34px; background: #fff; border: 2.2px solid var(--drop); border-radius: 45% 45% 60% 60%/68% 68% 100% 100%; display: flex; align-items: center; justify-content: center; font-size: 21px; color: #bae1ff; cursor: pointer; box-shadow: 0 1.5px 6px #bae1ff33; transition: transform 0.15s; }
+    .drop.filled { background: linear-gradient(120deg, #bae1ff 60%, #baffc9 100%); color: #fff; border-color: #baffc9; box-shadow: 0 2px 10px #baffc944; animation: bounce 0.4s; }
+    @keyframes bounce { 0% { transform: scale(1); } 60% { transform: scale(1.13); } 100% { transform: scale(1); } }
+    .progress-label { font-family: 'Manrope', sans-serif; font-size: 14px; color: #8b4a64; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.3px; }
+    .clear-btn { font-family: 'Manrope', sans-serif; font-size: 13px; background: var(--matcha-dark); color: #fff; padding: 7px 21px; border-radius: 13px; border: 2px solid #bcbcbc; cursor: pointer; margin-top: 14px; font-weight: 700; transition: background 0.14s, color 0.14s; box-shadow: 0 2px 8px #baffc9a0; letter-spacing: 1.1px; }
+    .clear-btn:hover { background: var(--accent); color: #8b4a64; }
+    .modal-overlay { display: none; position: absolute; z-index: 7; left: 0; top: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.93); justify-content: center; align-items: center; transition: opacity 0.2s; }
+    .modal-overlay.active { display: flex; animation: modalfadein 0.2s; }
+    @keyframes modalfadein { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: #fff; border: 2.5px solid var(--border); border-radius: 13px; min-width: 180px; padding: 22px 20px 15px; box-shadow: 0 6px 20px #e3f5e580; text-align: center; font-family: 'VT323', monospace; font-size: 18px; color: #a76fa1; }
+    .modal-btn { font-family: 'Manrope', sans-serif; font-size: 13px; background: var(--matcha); color: #64364a; padding: 7px 18px; border-radius: 14px; border: 2px solid #bcbcbc; cursor: pointer; margin: 14px 4px 4px; box-shadow: 0 2px 10px #baffc9a2; font-weight: 700; transition: background 0.16s, color 0.16s; }
+    .modal-btn:hover { background: var(--accent); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="water-window">
+    <div class="water-titlebar">
+      <span>water tracker 💧</span>
+      <div class="window-icons">
+        <div class="icon"></div>
+        <div class="icon"></div>
+        <div class="icon"></div>
+      </div>
+    </div>
+    <div class="water-body">
+      <div class="water-widget-title">Stay hydrated!</div>
+      <div class="progress-label" id="progressLabel"></div>
+      <div class="drops-row" id="dropsRow"></div>
+      <button class="clear-btn" id="clearBtn">clear all</button>
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+          <div id="modalMsg">clear all drops for today?</div>
+          <button class="modal-btn" id="confirmClear">yeah.</button>
+          <button class="modal-btn" id="closeModal">nah.</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-overlay" id="cheerOverlay">
+      <div class="modal">
+        <div id="cheerMsg">✨ Sip sip hooray! You're sparkling hydrated! 💖</div>
+        <button class="modal-btn" id="closeCheer">thanks!</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const DROPS_PER_DAY = 8;
+    const dropsRow = document.getElementById('dropsRow');
+    const progressLabel = document.getElementById('progressLabel');
+    let drops = JSON.parse(localStorage.getItem('waterTrackerDrops_')) || Array(DROPS_PER_DAY).fill(false);
+
+    function renderDrops() {
+      dropsRow.innerHTML = '';
+      let count = 0;
+      drops.forEach((filled, i) => {
+        if (filled) count++;
+        const d = document.createElement('div');
+        d.className = 'drop' + (filled ? ' filled' : '');
+        d.textContent = filled ? '💧' : '🩵';
+        d.onclick = () => {
+          drops[i] = !drops[i];
+          localStorage.setItem('waterTrackerDrops_', JSON.stringify(drops));
+          renderDrops();
+          const filledCount = drops.filter(x => x).length;
+          if (filledCount === DROPS_PER_DAY) showCheer();
+        };
+        dropsRow.appendChild(d);
+      });
+      progressLabel.textContent = `${count} of ${DROPS_PER_DAY} glasses`;
+    }
+    renderDrops();
+
+    const clearBtn = document.getElementById('clearBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeModal = document.getElementById('closeModal');
+    const confirmClear = document.getElementById('confirmClear');
+
+    clearBtn.onclick = () => modalOverlay.classList.add('active');
+    closeModal.onclick = () => modalOverlay.classList.remove('active');
+    confirmClear.onclick = () => {
+      drops = Array(DROPS_PER_DAY).fill(false);
+      localStorage.setItem('waterTrackerDrops_', JSON.stringify(drops));
+      renderDrops();
+      modalOverlay.classList.remove('active');
+    };
+    modalOverlay.onclick = e => { if (e.target === modalOverlay) modalOverlay.classList.remove('active'); };
+
+    const cheerOverlay = document.getElementById('cheerOverlay');
+    const closeCheer = document.getElementById('closeCheer');
+    function showCheer() { cheerOverlay.classList.add('active'); }
+    closeCheer.onclick = () => cheerOverlay.classList.remove('active');
+    cheerOverlay.onclick = e => { if (e.target === cheerOverlay) cheerOverlay.classList.remove('active'); };
+  </script>
+</body>
+</html>
