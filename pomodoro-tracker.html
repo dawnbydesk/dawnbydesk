@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>matcha pomodoro timer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=Manrope:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --matcha: #b4e6c1;
+        --border: #bcbcbc;
+        --window-bg: #f8faff;
+        --pane-bg: #ffffff;
+        --titlebar: #b1dab8;
+        --accent: #ffb3ba;
+        --modal-bg: rgba(233, 233, 241, 0.86);
+      }
+      body {
+        background: transparent;
+        font-family: "Manrope", Arial, sans-serif;
+        padding: 10px;
+      }
+      .window {
+        width: 340px;
+        border: 2.5px solid var(--border);
+        border-radius: 15px;
+        background: var(--pane-bg);
+        box-shadow: 7px 11px 0 #bcc9c5, 0 0 0 6px #e3f5e5;
+        overflow: hidden;
+        position: absolute;
+      }
+      .titlebar {
+        background: var(--titlebar);
+        color: #3b4530;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        height: 32px;
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        border-bottom: 2px solid var(--border);
+        user-select: none;
+        letter-spacing: 0.5px;
+        border-radius: 13px 13px 0 0;
+        box-shadow: 0 2px #e1f7ed;
+      }
+      .titlebar .buttons {
+        display: flex;
+        gap: 5px;
+      }
+      .titlebar .button {
+        width: 13px;
+        height: 13px;
+        border-radius: 4px;
+        background: #ffe5ee;
+        border: 1.3px solid #bcbcbc;
+        margin-right: 2px;
+        box-shadow: 1px 1px 0 #c2c2c2;
+        display: inline-block;
+      }
+      .titlebar .button:nth-child(1) {
+        background: #ffb5b5;
+      }
+      .titlebar .button:nth-child(2) {
+        background: #ffe9a8;
+      }
+      .titlebar .button:nth-child(3) {
+        background: #b5ffd9;
+        margin-right: 0;
+      }
+      .pomo-container {
+        background: linear-gradient(120deg, #f8faff 65%, #e3f5e5 100%);
+        padding: 30px 18px 24px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+      .pomo-title {
+        font-family: "VT323", monospace;
+        font-size: 32px;
+        letter-spacing: 1.2px;
+        margin-bottom: 14px;
+        color: transparent;
+        background: linear-gradient(90deg, #ffb3ba, #baffc9, #bae1ff, #ffdfba);
+        background-size: 250% 250%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow-move 6s ease-in-out infinite alternate;
+        text-shadow: 2px 2px 8px #eac4e0b0;
+      }
+      @keyframes rainbow-move {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+      .timer-display {
+        font-family: "VT323", monospace;
+        font-size: 64px;
+        letter-spacing: 2px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        color: transparent;
+        background: linear-gradient(
+          90deg,
+          #ff4686 10%,
+          #5eff6c 70%,
+          #baffc9 100%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow-move 5s ease-in-out infinite alternate;
+        text-shadow: 1.5px 1.5px 10px #fae0f780;
+      }
+      .pomo-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 13px;
+        align-items: center;
+        justify-content: center;
+      }
+      .pomo-btn {
+        font-family: "Manrope", sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        color: #8b4a64;
+        background: #fff9fd;
+        border: 2px solid var(--accent);
+        border-radius: 14px;
+        padding: 7px 22px;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s, border 0.18s;
+        box-shadow: 0 1.5px 10px #fbe3fd25;
+        outline: none;
+      }
+      .pomo-btn:hover {
+        background: var(--matcha);
+        color: #fff;
+        border: 2px solid #90b77d;
+      }
+      .pomo-mode {
+        font-family: "Manrope", sans-serif;
+        font-size: 15px;
+        color: #a97ab7;
+        margin-top: 6px;
+        letter-spacing: 0.8px;
+        background: #fff4fa;
+        border-radius: 10px;
+        padding: 4px 18px;
+        border: 1.1px solid #ebd6ec;
+        box-shadow: 0 1px 8px #fbe3fd20;
+        display: inline-block;
+        opacity: 0.96;
+      }
+      .modal-overlay {
+        display: none;
+        position: absolute;
+        z-index: 5;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--modal-bg);
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.2s;
+      }
+      .modal-overlay.active {
+        display: flex;
+        animation: modalfadein 0.2s;
+      }
+      @keyframes modalfadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal {
+        background: #fff;
+        border: 2.5px solid var(--border);
+        border-radius: 13px;
+        min-width: 200px;
+        padding: 30px 22px 22px 22px;
+        box-shadow: 0 6px 24px #ceb8ce20;
+        text-align: center;
+        font-family: "VT323", monospace;
+        font-size: 21px;
+        color: #a76fa1;
+        line-height: 1.6;
+        position: relative;
+      }
+      .modal-btn {
+        font-family: "Manrope", sans-serif;
+        font-size: 14px;
+        background: var(--matcha);
+        color: #64364a;
+        padding: 8px 26px;
+        border-radius: 18px;
+        border: 2px solid #bcbcbc;
+        cursor: pointer;
+        margin-top: 16px;
+        margin-bottom: 4px;
+        box-shadow: 0 2px 12px #baffc9a2;
+        font-weight: 700;
+        transition: background 0.16s, color 0.16s;
+      }
+      .modal-btn:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="window">
+      <div class="titlebar">
+        <span>pomodoro timer 🍅</span>
+        <div class="buttons">
+          <div class="button"></div>
+          <div class="button"></div>
+          <div class="button"></div>
+        </div>
+      </div>
+      <div class="pomo-container">
+        <div class="pomo-title">✦ focus time ✦</div>
+        <div class="timer-display" id="timer">25:00</div>
+        <div class="pomo-controls">
+          <button class="pomo-btn" id="start">Start</button>
+          <button class="pomo-btn" id="reset">Reset</button>
+        </div>
+        <div class="pomo-mode" id="mode-label">Pomodoro</div>
+        <!-- Modal Overlay inside widget -->
+        <div class="modal-overlay" id="modalOverlay">
+          <div class="modal">
+            <div id="modalMsg">Time's up!</div>
+            <button class="modal-btn" id="closeModal">okay!</button>
+          </div>
+        </div>
+        <!-- Whimsical chime sound -->
+        <audio
+          id="ding"
+          src="https://cdn.glitch.global/431a16d5-5894-43a3-b49a-7a7dc69b4861/ding-36029.mp3?v=1750666366906"
+          preload="auto"
+        ></audio>
+      </div>
+    </div>
+    <script>
+      let isRunning = false,
+        isPomodoro = true,
+        timer,
+        secondsLeft = 1500;
+      const timerDisplay = document.getElementById("timer");
+      const startBtn = document.getElementById("start");
+      const resetBtn = document.getElementById("reset");
+      const modeLabel = document.getElementById("mode-label");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const modalMsg = document.getElementById("modalMsg");
+      const closeModal = document.getElementById("closeModal");
+      const audioDing = document.getElementById("ding");
+
+      function formatTime(secs) {
+        let m = Math.floor(secs / 60),
+          s = secs % 60;
+        return `${m < 10 ? "0" + m : m}:${s < 10 ? "0" + s : s}`;
+      }
+      function updateDisplay() {
+        timerDisplay.textContent = formatTime(secondsLeft);
+        modeLabel.textContent = isPomodoro ? "Pomodoro" : "Break";
+        document.querySelector(".pomo-title").textContent = isPomodoro
+          ? "✦ focus time ✦"
+          : "✦ break time ✦";
+      }
+      function showModal(msg) {
+        modalMsg.textContent = msg;
+        modalOverlay.classList.add("active");
+        // Play sound
+        audioDing.currentTime = 0;
+        audioDing.volume = 0.6;
+        audioDing.play();
+      }
+      function hideModal() {
+        modalOverlay.classList.remove("active");
+      }
+      closeModal.onclick = hideModal;
+      modalOverlay.onclick = function (e) {
+        if (e.target === modalOverlay) hideModal();
+      };
+
+      function tick() {
+        if (secondsLeft > 0) {
+          secondsLeft--;
+          updateDisplay();
+        } else {
+          clearInterval(timer);
+          isRunning = false;
+          isPomodoro = !isPomodoro;
+          secondsLeft = isPomodoro ? 1500 : 300;
+          updateDisplay();
+          showModal(isPomodoro ? "Back to work! 🍵" : "Take a break! 🌸");
+        }
+      }
+      startBtn.onclick = function () {
+        if (!isRunning) {
+          isRunning = true;
+          timer = setInterval(tick, 1000);
+          startBtn.textContent = "Pause";
+        } else {
+          isRunning = false;
+          clearInterval(timer);
+          startBtn.textContent = "Start";
+        }
+      };
+      resetBtn.onclick = function () {
+        isRunning = false;
+        clearInterval(timer);
+        secondsLeft = isPomodoro ? 1500 : 300;
+        updateDisplay();
+        startBtn.textContent = "Start";
+      };
+      modeLabel.onclick = function () {
+        isPomodoro = !isPomodoro;
+        secondsLeft = isPomodoro ? 1500 : 300;
+        updateDisplay();
+        isRunning = false;
+        clearInterval(timer);
+        startBtn.textContent = "Start";
+      };
+
+      updateDisplay();
+    </script>
+  </body>
+</html>
+
+
