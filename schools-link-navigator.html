@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>school links navigator</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fredoka+One&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --matcha: #b4e6c1;
+      --border: #bcbcbc;
+      --window-bg: #f8faff;
+      --pane-bg: #ffffff;
+      --titlebar: #ffc5d3;
+      --text-color: #3b4530;
+      --accent: #fae1dc;
+    }
+    body {
+      background: transparent;
+      font-family: 'Fredoka One', sans-serif;
+      padding: 10px;
+    }
+    .nav-window {
+      width: 300px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--pane-bg);
+      box-shadow: 5px 7px 0 #dccfc2, 0 0 0 4px #e3f5e5;
+      overflow: hidden;
+      position: relative;
+    }
+    .nav-titlebar {
+      background: var(--titlebar);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      height: 32px;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      border-bottom: 2px solid var(--border);
+      user-select: none;
+      border-radius: 10px 10px 0 0;
+    }
+    .window-icons {
+      display: flex;
+      gap: 4px;
+    }
+    .icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: #ffb5b5;
+      border: 1px solid #cfa1a1;
+    }
+    .icon:nth-child(2) { background: #ffe9a8; }
+    .icon:nth-child(3) { background: #b5ffd9; }
+    .nav-body {
+      padding: 12px;
+      background: var(--window-bg);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #searchInput {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Fredoka One', sans-serif;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .btn {
+      background: var(--matcha);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: 'Fredoka One', sans-serif;
+      font-size: 14px;
+    }
+    .btn:hover { background: #a0c5a0; }
+    .btn.reset {
+      background: var(--accent);
+      color: var(--text-color);
+    }
+    .btn.reset:hover { background: #f0cfd6; }
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: var(--pane-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .link-item.drag-over {
+      outline: 2px dashed var(--matcha);
+    }
+    .link-item a {
+      flex: 1;
+      text-decoration: none;
+      font-size: 14px;
+      color: var(--text-color);
+      font-family: 'Fredoka One', sans-serif;
+    }
+    .link-item a:hover { background: var(--accent); }
+    .edit-btn, .delete-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-color);
+      margin-left: 8px;
+      font-family: 'Fredoka One', sans-serif;
+    }
+    .edit-btn:hover, .delete-btn:hover { color: var(--accent); }
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.95);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--pane-bg);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      width: 260px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .modal h2 {
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+    .modal input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: 'Fredoka One', sans-serif;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .modal-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Fredoka One', sans-serif;
+    }
+    .confirm-btn {
+      background: var(--matcha);
+      color: #fff;
+    }
+    .cancel-btn {
+      background: var(--accent);
+      color: var(--text-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-window">
+    <div class="nav-titlebar">
+      <span>school links 🎓</span>
+      <div class="window-icons">
+        <div class="icon"></div><div class="icon"></div><div class="icon"></div>
+      </div>
+    </div>
+    <div class="nav-body">
+      <input type="text" id="searchInput" placeholder="search links..." />
+      <div class="controls">
+        <button class="btn" id="addBtn">+ add</button>
+        <button class="btn reset" id="resetBtn">reset</button>
+      </div>
+      <ul class="link-list" id="linkList"></ul>
+    </div>
+    <!-- Edit/Add Modal -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal">
+        <h2>Edit Link</h2>
+        <input type="text" id="editName" placeholder="Link Name" />
+        <input type="text" id="editURL" placeholder="Link URL" />
+        <div class="modal-buttons">
+          <button class="modal-btn cancel-btn" id="cancelEdit">Cancel</button>
+          <button class="modal-btn confirm-btn" id="saveEdit">Save</button>
+        </div>
+      </div>
+    </div>
+    <!-- Reset Modal -->
+    <div class="modal-overlay" id="resetModal">
+      <div class="modal">
+        <h2>Reset and Clear Links?</h2>
+        <p>Do you want to reset and clear all your current links?</p>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel-btn" id="cancelReset">No</button>
+          <button class="modal-btn confirm-btn" id="confirmReset">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const defaultLinks = [
+      {name:'Canvas',url:'https://canvas.yourschool.edu'},
+      {name:'School Email',url:'https://mail.yourschool.edu'},
+      {name:'Library Catalog',url:'https://library.yourschool.edu'},
+      {name:'Campus Map',url:'https://campusmap.yourschool.edu'},
+      {name:'Registrar',url:'https://registrar.yourschool.edu'},
+      {name:'Career Center',url:'https://careers.yourschool.edu'},
+      {name:'Financial Services',url:'https://bills.yourschool.edu'},
+      {name:'IT Help Desk',url:'https://helpdesk.yourschool.edu'}
+    ];
+    let links = [...defaultLinks];
+    let editIndex = null;
+    const list = document.getElementById('linkList');
+    const searchInput = document.getElementById('searchInput');
+    const addBtn = document.getElementById('addBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const editModal = document.getElementById('editModal');
+    const resetModal = document.getElementById('resetModal');
+    const editName = document.getElementById('editName');
+    const editURL = document.getElementById('editURL');
+    const saveEdit = document.getElementById('saveEdit');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const confirmReset = document.getElementById('confirmReset');
+    const cancelReset = document.getElementById('cancelReset');
+
+    function render() {
+      list.innerHTML = '';
+      const filter = searchInput.value.toLowerCase();
+      links.forEach((link, i) => {
+        if (!link.name.toLowerCase().includes(filter)) return;
+        const li = document.createElement('li'); li.className = 'link-item';
+        const a = document.createElement('a'); a.href = link.url; a.target = '_blank'; a.textContent = link.name;
+        const eBtn = document.createElement('button'); eBtn.className = 'edit-btn'; eBtn.textContent = '✎';
+        const dBtn = document.createElement('button'); dBtn.className = 'delete-btn'; dBtn.textContent = '🗑';
+        eBtn.onclick = () => openEdit(i);
+        dBtn.onclick = () => { links.splice(i,1); render(); };
+        li.append(a, eBtn, dBtn);
+        list.append(li);
+      });
+    }
+
+    function openEdit(i) {
+      editIndex = i;
+      editName.value = links[i]?.name || '';
+      editURL.value = links[i]?.url || '';
+      editModal.classList.add('active');
+    }
+
+    saveEdit.onclick = () => {
+      const name = editName.value.trim();
+      const url = editURL.value.trim();
+      if (!name || !url) return;
+      if (editIndex === null) links.push({name, url});
+      else links[editIndex] = {name, url};
+      editModal.classList.remove('active');
+      render();
+    };
+    cancelEdit.onclick = () => editModal.classList.remove('active');
+    addBtn.onclick = () => { editIndex = null; openEdit(null); };
+
+    resetBtn.onclick = () => resetModal.classList.add('active');
+    cancelReset.onclick = () => resetModal.classList.remove('active');
+    confirmReset.onclick = () => {
+      links = [...defaultLinks];
+      searchInput.value = '';
+      render();
+      resetModal.classList.remove('active');
+    };
+
+    searchInput.addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>
