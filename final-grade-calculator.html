@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Final Grade Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fredoka+One&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --matcha: #b4e6c1;
+      --border: #bcbcbc;
+      --pane-bg: rgba(255,255,255,0.85);
+      --titlebar-start: #b1dab8;
+      --titlebar-end: #ffc5d3;
+      --text-color: #3b4530;
+      --accent: #fae1dc;
+      --glow: rgba(180,230,193,0.6);
+    }
+    body {
+      margin: 0;
+      padding: 10px;
+      background: transparent;
+      font-family: 'Fredoka One', sans-serif;
+    }
+    .window {
+      max-width: 400px;
+      margin: 0;
+      border-radius: 12px;
+      background: var(--pane-bg);
+      box-shadow: 5px 7px 0 #dccfc2, 0 0 0 4px #e3f5e5;
+      overflow: hidden;
+      position: relative;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px var(--glow); }
+      50%     { box-shadow: 0 0 20px rgba(180,230,193,0.9); }
+    }
+    .titlebar {
+      background: linear-gradient(90deg, var(--titlebar-start), var(--titlebar-end));
+      color: var(--text-color);
+      padding: 0 14px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      border-bottom: 2px solid var(--border);
+    }
+    .titlebar .title {
+      flex: 1;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .titlebar .window-icons {
+      display: flex;
+      gap: 6px;
+    }
+    .titlebar .button {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: #ffe5e5;
+      border: 1px solid var(--border);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .titlebar .button:hover {
+      transform: scale(1.2);
+    }
+    .titlebar .button:nth-child(1) { background: #ffb5b5; }
+    .titlebar .button:nth-child(2) { background: #ffe9a8; }
+    .titlebar .button:nth-child(3) { background: #b5ffd9; }
+    .body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .body label {
+      font-size: 14px;
+      color: var(--text-color);
+    }
+    .body input {
+      width: 100%;
+      padding: 8px 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: box-shadow 0.3s;
+    }
+    .body input:focus {
+      outline: none;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .calculate-btn {
+      background: var(--matcha);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .calculate-btn:hover {
+      background: #a0c5a0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+    }
+    .result {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      color: var(--text-color);
+      text-align: left;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .result.visible {
+      opacity: 1;
+    }
+    .footer {
+      font-size: 12px;
+      color: #888;
+      text-align: left;
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <span class="title">Final Grade Calculator</span>
+      <div class="window-icons">
+        <span class="button"></span>
+        <span class="button"></span>
+        <span class="button"></span>
+      </div>
+    </div>
+    <div class="body">
+      <label for="current">Current Grade (%)</label>
+      <input type="number" id="current" min="0" max="100" placeholder="e.g. 85" />
+
+      <label for="weight">Final Weight (%)</label>
+      <input type="number" id="weight" min="0" max="100" placeholder="e.g. 30" />
+
+      <label for="desired">Desired Overall Grade (%)</label>
+      <input type="number" id="desired" min="0" max="100" placeholder="e.g. 90" />
+
+      <button class="calculate-btn" id="calcBtn">Calculate Needed Final</button>
+      <div class="result" id="resultText">--</div>
+    </div>
+    <div class="footer">Powered by the same calculations as RogerHub</div>
+  </div>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const curInput = document.getElementById('current');
+      const weightInput = document.getElementById('weight');
+      const desiredInput = document.getElementById('desired');
+      const resultText = document.getElementById('resultText');
+      document.getElementById('calcBtn').addEventListener('click', () => {
+        const cur = parseFloat(curInput.value) / 100;
+        const w = parseFloat(weightInput.value) / 100;
+        const des = parseFloat(desiredInput.value) / 100;
+        if (isNaN(cur) || isNaN(w) || isNaN(des) || w <= 0) {
+          resultText.textContent = '--';
+          resultText.classList.remove('visible');
+          return;
+        }
+        const needed = ((des - cur * (1 - w)) / w) * 100;
+        let msg;
+        if (needed <= 0) {
+          msg = "You've already achieved it! 🎉";
+        } else if (needed > 100) {
+          msg = `You'll need ${needed.toFixed(1)}%. That's beyond perfect, consider extra credit or reviewing with your instructor, but you've got this!`;
+        } else if (needed >= 90) {
+          msg = `You'll need ${needed.toFixed(1)}%. Almost there!`;
+        } else if (needed >= 80) {
+          msg = `You'll need ${needed.toFixed(1)}%. Keep up the great work!`;
+        } else {
+          msg = `You'll need ${needed.toFixed(1)}%. Easy peasy!`;
+        }
+        resultText.textContent = msg;
+        resultText.classList.add('visible');
+      });
+    });
+  </script>
+</body>
+</html>
