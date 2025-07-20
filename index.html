@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>little wins</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=Manrope:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --matcha: #b4e6c1;
+        --border: #bcbcbc;
+        --window-bg: #f8faff;
+        --pane-bg: #fff;
+        --titlebar: #b1dab8;
+        --accent: #ffb3ba;
+        --modal-bg: rgba(233, 233, 241, 0.86);
+      }
+      body {
+        background: transparent;
+        font-family: "Manrope", Arial, sans-serif;
+        padding: 10px;
+      }
+      .window {
+        width: 330px;
+        border: 2.5px solid var(--border);
+        border-radius: 15px;
+        background: var(--pane-bg);
+        box-shadow: 7px 11px 0 #bcc9c5, 0 0 0 6px #e3f5e5;
+        overflow: hidden;
+        position: absolute;
+      }
+      .titlebar {
+        background: var(--titlebar);
+        color: #3b4530;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        height: 32px;
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        border-bottom: 2px solid var(--border);
+        user-select: none;
+        border-radius: 13px 13px 0 0;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px #e1f7ed;
+      }
+      .titlebar .buttons {
+        display: flex;
+        gap: 5px;
+      }
+      .titlebar .button {
+        width: 13px;
+        height: 13px;
+        border-radius: 4px;
+        border: 1.3px solid #bcbcbc;
+        margin-right: 2px;
+        box-shadow: 1px 1px 0 #c2c2c2;
+        display: inline-block;
+      }
+      .titlebar .button:nth-child(1) {
+        background: #ffb5b5;
+      }
+      .titlebar .button:nth-child(2) {
+        background: #ffe9a8;
+      }
+      .titlebar .button:nth-child(3) {
+        background: #b5ffd9;
+        margin-right: 0;
+      }
+      .gratitude-container {
+        background: linear-gradient(120deg, #f8faff 70%, #e3f5e5 100%);
+        padding: 24px 18px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+      .grat-title {
+        font-family: "VT323", monospace;
+        font-size: 28px;
+        background: linear-gradient(90deg, #ffb3ba, #baffc9, #bae1ff, #ffdfba);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        animation: rainbow-move 6s ease-in-out infinite alternate;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      .grat-message {
+        font-family: Manrope, sans-serif;
+        font-size: 10px;
+        color: #8b4a64;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+      @keyframes rainbow-move {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+      .grat-form input,
+      .grat-form button {
+        font-family: "Manrope", sans-serif;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 1.5px solid var(--accent);
+        padding: 7px 14px;
+        margin-right: 7px;
+        outline: none;
+      }
+      .grat-form button {
+        background: var(--matcha);
+        color: #855470;
+        font-weight: 700;
+        border: 2px solid var(--accent);
+        transition: 0.2s;
+      }
+      .grat-form button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .grat-list {
+        list-style: none;
+        padding: 0;
+        margin: 18px 0 0 0;
+        width: 100%;
+        font-family: "Manrope", sans-serif;
+        font-size: 15px;
+        color: #865486;
+      }
+      .grat-list li {
+        background: #fff7f9;
+        border-left: 4px solid var(--matcha);
+        border-radius: 9px;
+        padding: 7px 10px 4px 10px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 7px #fbe3fd20;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        position: relative;
+      }
+      .delete-btn {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        line-height: 1;
+        color: #c55;
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .delete-btn:hover {
+        color: #a00;
+      }
+      .grat-list li {
+        position: relative;
+      }
+
+      .grat-date {
+        font-family: "VT323", monospace;
+        font-size: 13px;
+        color: #a7b19a;
+        margin-top: 2px;
+        opacity: 0.82;
+        padding-left: 2px;
+        letter-spacing: 0.5px;
+      }
+      .clear-btn {
+        font-family: "Manrope", sans-serif;
+        font-size: 14px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 12px;
+        border: none;
+        margin: 10px auto 0 auto;
+        padding: 7px 24px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 12px #baffc9a2;
+        transition: background 0.17s, color 0.17s;
+        display: block;
+      }
+      .clear-btn:hover {
+        background: var(--matcha);
+        color: #855470;
+      }
+      /* modal overlay */
+      .modal-overlay {
+        display: none;
+        position: absolute;
+        z-index: 9;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--modal-bg);
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.2s;
+      }
+      .modal-overlay.active {
+        display: flex;
+        animation: modalfadein 0.2s;
+      }
+      @keyframes modalfadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal {
+        background: #fff;
+        border: 2.5px solid var(--border);
+        border-radius: 13px;
+        min-width: 180px;
+        padding: 30px 22px 22px 22px;
+        box-shadow: 0 6px 24px #ceb8ce20;
+        text-align: center;
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        color: #a76fa1;
+        line-height: 1.6;
+        position: relative;
+      }
+      .modal-btn {
+        font-family: "Manrope", sans-serif;
+        font-size: 14px;
+        background: var(--matcha);
+        color: #64364a;
+        padding: 8px 26px;
+        border-radius: 18px;
+        border: 2px solid #bcbcbc;
+        cursor: pointer;
+        margin-top: 16px;
+        margin-bottom: 4px;
+        box-shadow: 0 2px 12px #baffc9a2;
+        font-weight: 700;
+        transition: background 0.16s, color 0.16s;
+        margin-right: 10px;
+      }
+      .modal-btn:last-child {
+        margin-right: 0;
+      }
+      .modal-btn:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="window">
+      <div class="titlebar">
+        <span>little wins 🌱</span>
+        <div class="buttons">
+          <div class="button"></div>
+          <div class="button"></div>
+          <div class="button"></div>
+        </div>
+      </div>
+      <div class="gratitude-container">
+        <div class="grat-title">what's your little win today?</div>
+                <div class="grat-message">*extend the widget size if you have too many wins!*</div>
+
+        <form class="grat-form" id="gratForm" autocomplete="off">
+          <input
+            id="gratInput"
+            type="text"
+            maxlength="60"
+            placeholder="i finished my reading 📚"
+            required
+          />
+          <button type="submit">add</button>
+        </form>
+        <ul class="grat-list" id="gratList"></ul>
+        <button class="clear-btn" id="clearAll">clear all</button>
+        <!-- Modal Overlay for clear all -->
+        <div class="modal-overlay" id="modalOverlay">
+          <div class="modal">
+            <div id="modalMsg">
+              are you sure you want to clear all little wins?
+            </div>
+            <button class="modal-btn" id="confirmClear">yeah!</button>
+            <button class="modal-btn" id="cancelClear">nah.</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const form = document.getElementById("gratForm");
+      const input = document.getElementById("gratInput");
+      const list = document.getElementById("gratList");
+      const clearBtn = document.getElementById("clearAll");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const confirmClear = document.getElementById("confirmClear");
+      const cancelClear = document.getElementById("cancelClear");
+
+      // each item: {text: 'string', date: 'YYYY-MM-DD'}
+      let items = JSON.parse(localStorage.getItem("littleWins") || "[]");
+      function formatDate(iso) {
+        const date = new Date(iso);
+        return date.toLocaleDateString(undefined, {
+          year: "2-digit",
+          month: "short",
+          day: "numeric",
+        });
+      }
+      function render() {
+        list.innerHTML = items
+          .map(
+            (w, i) =>
+              `<li>
+       <span>${w.text}</span>
+       <button class="delete-btn" data-index="${i}">×</button>
+       <span class="grat-date">${formatDate(w.date)}</span>
+     </li>`
+          )
+          .join("");
+      }
+
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        if (input.value.trim()) {
+          const now = new Date();
+          items.unshift({
+            text: input.value.trim(),
+            date: now.toISOString().slice(0, 10),
+          });
+          if (items.length > 5) items.pop();
+          localStorage.setItem("littleWins", JSON.stringify(items));
+          input.value = "";
+          render();
+        }
+      };
+      clearBtn.onclick = () => {
+        modalOverlay.classList.add("active");
+      };
+      confirmClear.onclick = () => {
+        items = [];
+        localStorage.setItem("littleWins", "[]");
+        render();
+        modalOverlay.classList.remove("active");
+      };
+      cancelClear.onclick = () => {
+        modalOverlay.classList.remove("active");
+      };
+      // optional: clicking outside modal closes it
+      modalOverlay.onclick = (e) => {
+        if (e.target === modalOverlay) modalOverlay.classList.remove("active");
+      };
+      render();
+      list.addEventListener("click", (e) => {
+        if (e.target.matches(".delete-btn")) {
+          const idx = +e.target.dataset.index;
+          items.splice(idx, 1);
+          localStorage.setItem("littleWins", JSON.stringify(items));
+          render();
+        }
+      });
+    </script>
+  </body>
+</html>
