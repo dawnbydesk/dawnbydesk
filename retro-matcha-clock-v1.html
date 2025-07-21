@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>retro matcha clock</title>
   <link href="https://fonts.googleapis.com/css2?family=VT323&family=Manrope:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -11,25 +12,24 @@
       --pane-bg: #ffffff;
       --titlebar: #b1dab8;
     }
-    body { 
-      background: transparent; 
-      font-family: 'Manrope', sans-serif; 
-      padding: 10px; 
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    html, body {
+      margin: 0; padding: 0;
+      background: transparent;
+      font-family: 'Manrope', sans-serif;
+    }
+    .widget-wrapper {
+      width: 100%;
+      overflow: visible;
     }
     .window {
-      position: absolute; /* Spawn at the top left */
-      top: 0; 
-      left: 0; 
-      width: 300px; /* Fixed width */
+      position: relative;
+      width: 300px;                   /* base width */
       border: 2.5px solid var(--border);
       border-radius: 15px;
       background: var(--pane-bg);
       box-shadow: 7px 11px 0 #bcc9c5, 0 0 0 6px #e3f5e5;
       overflow: hidden;
+      transform-origin: top left;
     }
     .titlebar {
       display: flex; align-items: center; justify-content: space-between;
@@ -41,127 +41,146 @@
       border-bottom: 2px solid var(--border);
       border-radius: 13px 13px 0 0;
       user-select: none;
-      letter-spacing: 0.5px;
+      letter-spacing: .5px;
       box-shadow: 0 2px #e1f7ed;
     }
     .buttons { display: flex; gap: 5px; }
-    .button { width: 13px; height: 13px; border-radius: 4px; background: #ffe5ee; border: 1.3px solid #bcbcbc; box-shadow: 1px 1px 0 #c2c2c2; }
-    .button:nth-child(1) { background: #ffb5b5; }
-    .button:nth-child(2) { background: #ffe9a8; }
-    .button:nth-child(3) { background: #b5ffd9; }
-    .toggle-container {
-      position: absolute;
-      top: 40px;
-      right: 14px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: #3b4530;
-      z-index: 2;
+    .button {
+      width: 13px; height: 13px; border-radius: 4px;
+      border: 1.3px solid #bcbcbc; box-shadow: 1px 1px 0 #c2c2c2;
+      background: #ffe5ee;
     }
-    .switch { position: relative; display: inline-block; width: 32px; height: 18px; }
+    .button:nth-child(1) { background: #ffb5b5 }
+    .button:nth-child(2) { background: #ffe9a8 }
+    .button:nth-child(3) { background: #b5ffd9 }
+
+    .toggle-container {
+      position: absolute; top: 40px; right: 14px;
+      display: flex; align-items: center; gap: 4px;
+      font-size: 12px; color: #3b4530; z-index: 2;
+    }
+    .switch { position: relative; width: 32px; height: 18px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute; cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 18px;
+      background-color: #ccc; transition: .4s; border-radius: 18px;
     }
     .slider:before {
       position: absolute; content: "";
       height: 14px; width: 14px;
       left: 2px; bottom: 2px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
+      background: #fff; transition: .4s; border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--titlebar); }
-    input:checked + .slider:before { transform: translateX(14px); }
+    input:checked + .slider { background: var(--titlebar) }
+    input:checked + .slider:before { transform: translateX(14px) }
+
     .clock-container {
       display: flex; flex-direction: column; align-items: center;
       background: linear-gradient(120deg, #f8faff 65%, #e3f5e5 100%);
-      padding: 5vw 0;
-      min-height: 112px;
+      padding: 22px 0 16px; min-height: 112px;
     }
     .clock-time {
       font-family: 'VT323', monospace;
-      font-size: clamp(30px, 8vw, 66px); /* responsive font size with clamp */
-      font-weight: 700;
-      background: linear-gradient(90deg, #ff4686 0%, #fa8700 20%, #ffe53b 40%, #5eff6c 60%, #2acfff 80%, #737bff 90%, #c22cff 100%);
-      background-size: 220% 220%;
-      background-clip: text;
-      -webkit-background-clip: text;
+      font-size: 66px; font-weight: 700;
+      background: linear-gradient(90deg,
+        #ff4686 0%, #fa8700 20%, #ffe53b 40%,
+        #5eff6c 60%, #2acfff 80%, #737bff 90%, #c22cff 100%);
+      background-clip: text; -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: rainbow-move 2s ease-in-out infinite alternate; /* Faster speed */
-      letter-spacing: 3px;
-      text-shadow: 2px 2px 14px #b8b7e3;
-      margin: 0 0 12px;
-      line-height: 1.03;
-      min-width: 0;
+      animation: rainbow-move 2s ease-in-out infinite alternate;
+      letter-spacing: 3px; text-shadow: 2px 2px 14px #b8b7e3;
+      margin: 0 0 12px; line-height: 1.03; min-width: 225px;
       text-align: center;
     }
     @keyframes rainbow-move {
-      0% { background-position: 0% 60%; }
-      100% { background-position: 100% 60%; }
+      0% { background-position: 0% 60% }
+      100% { background-position: 100% 60% }
     }
     .clock-date {
       font-family: 'Manrope', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: #a97ab7;
-      letter-spacing: 1px;
-      margin-top: 2px;
+      font-size: 16px; font-weight: 700; color: #a97ab7;
+      letter-spacing: 1px; margin-top: 2px;
       text-shadow: 0 1px 7px #baa5e5;
-      background: #fff4fa;
-      padding: 3px 15px 2px;
-      border-radius: 16px;
-      border: 1.2px solid #ebd6ec;
-      box-shadow: 0 2px 12px #fbe3fd50;
-      opacity: 0.97;
+      background: #fff4fa; padding: 3px 15px 2px;
+      border-radius: 16px; border: 1.2px solid #ebd6ec;
+      box-shadow: 0 2px 12px #fbe3fd50; opacity: .97;
     }
   </style>
 </head>
 <body>
-  <div class="window">
-    <div class="titlebar">
-      <span>matcha o' clock! 💚</span>
-      <div class="buttons">
-        <div class="button"></div>
-        <div class="button"></div>
-        <div class="button"></div>
+  <div class="widget-wrapper">
+    <div class="window">
+      <div class="titlebar">
+        <span>matcha o' clock! 💚</span>
+        <div class="buttons">
+          <div class="button"></div>
+          <div class="button"></div>
+          <div class="button"></div>
+        </div>
+      </div>
+      <div class="toggle-container">
+        <span>12h</span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-format">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="clock-container">
+        <div class="clock-time" id="clock"></div>
+        <div class="clock-date" id="clock-date"></div>
       </div>
     </div>
-    <div class="toggle-container">
-      <span>12h</span>
-      <label class="switch">
-        <input type="checkbox" id="toggle-format">
-        <span class="slider"></span>
-      </label>
-    </div>
-    <div class="clock-container">
-      <div class="clock-time" id="clock"></div>
-      <div class="clock-date" id="clock-date"></div>
-    </div>
   </div>
+
   <script>
-    const toggle = document.getElementById('toggle-format');
-    function pad(n) { return n < 10 ? '0' + n : n; }
-    function updateClock() {
-      const now = new Date();
-      const hours = now.getHours();
-      if (toggle.checked) {
-        const h12 = hours % 12 || 12;
-        document.getElementById('clock').textContent = pad(h12) + ':' + pad(now.getMinutes()) + (hours >= 12 ? ' pm' : ' am');
-      } else {
-        document.getElementById('clock').textContent = pad(hours) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle    = document.getElementById('toggle-format');
+      const clock     = document.getElementById('clock');
+      const clockDate = document.getElementById('clock-date');
+      const wrap      = document.querySelector('.widget-wrapper');
+      const win       = wrap.querySelector('.window');
+      const baseW     = 300;
+
+      function pad(n){ return n < 10 ? '0'+n : n }
+
+      function updateClock(){
+        const now = new Date(), h = now.getHours();
+        if (toggle.checked) {
+          const h12 = h % 12 || 12;
+          clock.textContent = pad(h12) + ':' + pad(now.getMinutes()) +
+                              (h >= 12 ? ' pm' : ' am');
+        } else {
+          clock.textContent = pad(h) + ':' + pad(now.getMinutes()) +
+                              ':' + pad(now.getSeconds());
+        }
+        clockDate.textContent = now.toLocaleDateString(undefined, {
+          weekday:'short', year:'numeric', month:'short', day:'numeric'
+        });
       }
-      document.getElementById('clock-date').textContent = now.toLocaleDateString(undefined, { weekday:'short', year:'numeric', month:'short', day:'numeric' });
-    }
-    updateClock();
-    setInterval(updateClock, 1000);
-    toggle.addEventListener('change', updateClock);
+
+      function resizeScale(){
+        const width = wrap.clientWidth;
+        let scale = width / baseW;
+        scale = Math.min(Math.max(scale, 1), 2);
+        win.style.transform = `scale(${scale})`;
+        // after scaling, get the new height and apply it so Notion won't clip
+        wrap.style.height = win.getBoundingClientRect().height + 'px';
+      }
+
+      // initial
+      updateClock(); resizeScale();
+      // tick every second
+      setInterval(updateClock, 1000);
+      // watch for toggle
+      toggle.addEventListener('change', updateClock);
+      // watch for wrapper width changes
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(resizeScale).observe(wrap);
+      } else {
+        window.addEventListener('resize', resizeScale);
+      }
+    });
   </script>
 </body>
 </html>
